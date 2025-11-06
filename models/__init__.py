@@ -1,5 +1,8 @@
 """模型模块"""
 
-from .flow_matching import SimpleFlowMatchingModel
+from .flow_matching import SimpleFlowMatchingModel, AdvancedFlowMatchingModel
 
-__all__ = ['SimpleFlowMatchingModel']
+__all__ = [
+    'SimpleFlowMatchingModel',
+    'AdvancedFlowMatchingModel',
+    ]

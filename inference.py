@@ -6,17 +6,34 @@ import numpy as np
 from PIL import Image
 from pathlib import Path
 from tqdm import tqdm
+import random
+import os
 
 from models import SimpleFlowMatchingModel
 from data import SketchGenerator
 from utils import save_comparison
 
 
-def load_image(image_path, size=256):
+def load_image(image_path, size=64):
     """加载并预处理图像"""
     img = Image.open(image_path).convert('RGB')
     img = img.resize((size, size))
     return np.array(img)
+
+
+def get_random_sketch(sketch_dir="datasets/anime_faces/sketches/canny/val/anime"):
+    """从指定目录随机选择一个简笔画"""
+    if not os.path.exists(sketch_dir):
+        raise FileNotFoundError(f"简笔画目录不存在: {sketch_dir}")
+    
+    sketch_files = [f for f in os.listdir(sketch_dir) if f.endswith('.png')]
+    if not sketch_files:
+        raise FileNotFoundError(f"在 {sketch_dir} 中未找到简笔画文件")
+    
+    random_sketch = random.choice(sketch_files)
+    sketch_path = os.path.join(sketch_dir, random_sketch)
+    print(f"随机选择简笔画: {sketch_path}")
+    return sketch_path
 
 
 def preprocess(img_np):
@@ -52,12 +69,14 @@ def sample_from_model(model, sketch_tensor, device, steps=50):
 
 def main():
     parser = argparse.ArgumentParser(description="简笔画上色推理")
-    parser.add_argument("--model", type=str, required=True, help="模型路径")
-    parser.add_argument("--input", type=str, required=True, help="输入图像")
+    parser.add_argument("--model", type=str, default="checkpoints/best_model.pth", help="模型路径")
+    parser.add_argument("--input", type=str, help="输入图像")
     parser.add_argument("--output", type=str, default="colored_output.png")
     parser.add_argument("--sketch_method", type=str, default="canny")
     parser.add_argument("--steps", type=int, default=50)
     parser.add_argument("--use_sketch", action="store_true")
+    parser.add_argument("--sketch_dir", type=str, default="datasets/anime_faces/sketches/canny/val/anime", 
+                        help="随机选择简笔画的目录")
     
     args = parser.parse_args()
     
@@ -70,12 +89,23 @@ def main():
     model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()
     
+    # 如果未提供输入图像，则随机选择一个简笔画
+    if args.input is None:
+        input_path = get_random_sketch(args.sketch_dir)
+        # 随机选择的是简笔画，所以默认使用简笔画模式
+        args.use_sketch = True
+    else:
+        input_path = args.input
+    
     # 加载图像
-    image_np = load_image(args.input)
+    image_np = load_image(input_path)
     
     # 生成简笔画
     if args.use_sketch:
         sketch_np = image_np
+        # 对于随机选择的简笔画，我们没有原始彩色图像，所以创建一个空白图像作为占位符
+        if args.input is None:
+            image_np = np.zeros_like(sketch_np)
     else:
         generator = SketchGenerator(method=args.sketch_method)
         sketch_np = generator.generate(image_np)

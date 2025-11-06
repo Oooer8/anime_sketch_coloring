@@ -1,2 +1,12 @@
 datasets/
 checkpoints/
+logs/
+
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+
+*.png
+*.jpg

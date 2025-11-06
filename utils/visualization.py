@@ -25,7 +25,7 @@ def visualize_pairs(
         sketch = sketches[i].permute(1, 2, 0).cpu().numpy()
         sketch = np.clip(sketch, 0, 1)
         axes[0, i].imshow(sketch)
-        axes[0, i].set_title('简笔画', fontsize=10)
+        axes[0, i].set_title('sketch', fontsize=10)
         axes[0, i].axis('off')
         
         # 上色图像
@@ -34,7 +34,7 @@ def visualize_pairs(
             color = (color + 1) / 2
         color = np.clip(color, 0, 1)
         axes[1, i].imshow(color)
-        axes[1, i].set_title('彩色图像', fontsize=10)
+        axes[1, i].set_title('colorings', fontsize=10)
         axes[1, i].axis('off')
     
     plt.tight_layout()
@@ -53,15 +53,15 @@ def save_comparison(
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     
     axes[0].imshow(original)
-    axes[0].set_title("原始图像")
+    axes[0].set_title("source pic")
     axes[0].axis("off")
     
     axes[1].imshow(sketch)
-    axes[1].set_title("简笔画")
+    axes[1].set_title("sketch")
     axes[1].axis("off")
     
     axes[2].imshow(colored)
-    axes[2].set_title("上色结果")
+    axes[2].set_title("coloring result")
     axes[2].axis("off")
     
     plt.tight_layout()
