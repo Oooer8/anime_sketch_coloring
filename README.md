@@ -7,6 +7,15 @@
 - 训练时使用左边原图和简笔画进行训练
 - 评估时输入简笔画，生成右边上色后的图像，左边和右边的图像可以直观对比
 
+训练100epochs的输出
+
+![train100epochs](./preview/train_100epochs.png)
+
+训练1000epochs的输出
+
+![train1000epochs](./preview/train_1000epochs.png)
+
+
 # 2.环境安装
 ```bash
 conda env create -f environment.yml
@@ -40,7 +49,7 @@ python train.py \
     --lr 2e-4
 ```
     
-2. 延长训练
+## 2. 延长训练
 ```bash
 python train.py \
     --resume checkpoints/best_model.pth \
@@ -48,13 +57,13 @@ python train.py \
     --reset_scheduler  # 重新开始学习率计划
 ```
     
-3. 使用周期性重启（推荐）
-初始训练
+## 3. 使用周期性重启（推荐）
+- 初始训练
 ```bash
 python train.py --scheduler_type cosine_restart --cosine_t0 50
 ```
 
-继续训练（自动重启学习率）
+- 继续训练（自动重启学习率）
 ```bash
 python train.py \
     --resume checkpoints/best_model.pth \
@@ -63,7 +72,7 @@ python train.py \
 ```
 
 
-4. 微调
+## 4. 微调
 ```bash
 python train.py \
     --resume checkpoints/best_model.pth \
@@ -87,28 +96,28 @@ tensorboard --logdir=./logs
 提供了一些评估用例：
 
 ## 1. 单张推理
-随机选择一张简笔画
+- 随机选择一张简笔画
 ```bash
 python inference.py --model checkpoints/best_model.pth
 ```
 
-指定输入图像（彩色图）
+- 指定输入图像（彩色图）
 ```bash
 python inference.py --model checkpoints/best_model.pth --input my_image.png
 ```
 
-指定输入图像（已经是简笔画）
+- 指定输入图像（已经是简笔画）
 ```bash
 python inference.py --model checkpoints/best_model.pth --input sketch.png --use_sketch
 ```
 
-使用更高质量的采样
+- 使用更高质量的采样
 ```bash
 python inference.py --model checkpoints/best_model.pth --steps 100 --method heun
 ```
 
-2. 批量推理
-批量处理验证集
+## 2. 批量推理
+- 批量处理验证集
 ```bash
 python inference.py \
     --model checkpoints/best_model.pth \
@@ -116,7 +125,7 @@ python inference.py \
     --batch_output_dir outputs/validation
 ```
 
-批量处理前 20 个样本
+- 批量处理前 20 个样本
 ```bash
 python inference.py \
     --model checkpoints/best_model.pth \
@@ -125,7 +134,7 @@ python inference.py \
     --batch_output_dir outputs/sample_20
 ```
 
-使用高质量采样
+- 使用高质量采样
 ```bash
 python inference.py \
     --model checkpoints/best_model.pth \
@@ -134,7 +143,7 @@ python inference.py \
     --method heun
 ```
 
-3. 设置随机种子（可复现）
+## 3. 设置随机种子（可复现）
 ```bash
 python inference.py --model checkpoints/best_model.pth --seed 42
 ```
