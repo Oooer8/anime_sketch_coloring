@@ -204,8 +204,8 @@ class AdvancedFlowMatchingModel(nn.Module):
     - U-Net 架构与跳跃连接
     """
     
-    def __init__(self, in_channels=3, out_channels=3, base_channels=64, 
-                 time_emb_dim=256, num_heads=4, dropout=0.1, stochastic_depth=0.1):
+    def __init__(self, in_channels=3, out_channels=3, base_channels=32, 
+                 time_emb_dim=128, num_heads=4, dropout=0.1, stochastic_depth=0.1):
         super().__init__()
         
         # 时间嵌入
@@ -371,9 +371,12 @@ SimpleFlowMatchingModel = AdvancedFlowMatchingModel
 
 
 if __name__ == "__main__":
-    """测试模型"""
+    """可视化网络结构"""
+    import torch
+    from torchview import draw_graph
+    
     print("="*70)
-    print("测试 AdvancedFlowMatchingModel")
+    print("生成网络结构可视化")
     print("="*70)
     
     # 创建模型
@@ -385,26 +388,26 @@ if __name__ == "__main__":
         stochastic_depth=0.1
     )
     
-    # 统计参数
-    total_params = sum(p.numel() for p in model.parameters())
-    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    # 准备输入
+    sketch = torch.randn(1, 3, 128, 128)
+    noisy_color = torch.randn(1, 3, 128, 128)
+    t = torch.rand(1, 1)
     
-    print(f"\n模型参数统计:")
-    print(f"  总参数量: {total_params:,}")
-    print(f"  可训练参数: {trainable_params:,}")
-    print(f"  模型大小: {total_params * 4 / 1024 / 1024:.2f} MB (FP32)")
+    # 生成可视化图
+    model_graph = draw_graph(
+        model, 
+        input_data=[sketch, noisy_color, t],
+        expand_nested=True,  # 展开嵌套模块
+        depth=4,  # 显示深度
+        device='cpu',
+        save_graph=True,  # 保存图形
+        filename='flow_matching_architecture',  # 文件名
+        directory='./visualizations',  # 保存目录
+    )
     
-    # 测试前向传播
-    print(f"\n测试前向传播...")
-    sketch = torch.randn(2, 3, 128, 128)
-    noisy_color = torch.randn(2, 3, 128, 128)
-    t = torch.rand(2, 1)
+    # 也可以在 Jupyter 中直接显示
+    model_graph.visual_graph
     
-    model.eval()
-    with torch.no_grad():
-        velocity = model(sketch, noisy_color, t)
-    
-    print(f"  输入形状: sketch={sketch.shape}, noisy_color={noisy_color.shape}, t={t.shape}")
-    print(f"  输出形状: velocity={velocity.shape}")
-    print(f"\n✓ 模型测试通过！")
+    print("\n✓ 网络结构图已保存到: ./visualizations/flow_matching_architecture.png")
     print("="*70)
+
