@@ -14,3 +14,4 @@ __pycache__/
 visualizations/
 
 *.pth
+outputs/
