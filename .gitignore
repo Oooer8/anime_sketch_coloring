@@ -10,6 +10,13 @@ __pycache__/
 
 *.png
 *.jpg
+# 先忽略所有 png 和 jpg
+*.png
+*.jpg
+
+# 但保留 preview/ 目录下的 png
+!preview/*.png
+!preview/**/*.png
 
 visualizations/
 

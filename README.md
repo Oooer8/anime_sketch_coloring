@@ -1,6 +1,8 @@
 # 1. 介绍
 这个项目可以实现简笔画上色。使用的方法是Flow Matching。
+
 ![输出示例](./preview/outputs.png)
+
 - 左边是数据集`anime_faces`的原图，中间是canny后的简笔画，右边是模型上色后的图像
 - 训练时使用左边原图和简笔画进行训练
 - 评估时输入简笔画，生成右边上色后的图像，左边和右边的图像可以直观对比
@@ -23,15 +25,14 @@ https://huggingface.co/datasets/huggan/anime-faces
 
 
 # 4. 生成简笔画
-我们需要先使用canny等方法先提取图片的边缘生成简笔画。
-具体做法是
+我们需要先使用canny等方法先提取图片的边缘生成简笔画。具体做法是
 ```bash
 python -m preprocess.py
 ```
 
 # 5. 训练模型
 提供了以下训练例子：
-1. 初始训练
+## 1. 初始训练
 ```bash
 python train.py \
     --scheduler_type onecycle \
@@ -72,11 +73,11 @@ python train.py \
 ```
 还有关于模型和训练器的相关更多参数，都会保存下来以供重启。
 
-建议使用`nvitop`监督显卡使用情况
+- 建议使用`nvitop`监督显卡使用情况
 ```bash
 nvitop --monitor
 ```
-以及使用`tensorboard`监督训练情况
+- 以及使用`tensorboard`监督训练情况
 ```bash
 tensorboard --logdir=./logs
 ```
@@ -84,9 +85,8 @@ tensorboard --logdir=./logs
 
 # 6. 评估模型
 提供了一些评估用例：
-使用示例
 
-1. 单张推理
+## 1. 单张推理
 随机选择一张简笔画
 ```bash
 python inference.py --model checkpoints/best_model.pth
